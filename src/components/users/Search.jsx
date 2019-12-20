@@ -1,65 +1,62 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useContext } from 'react';
+import GithubContext from '../../context/github/githubContext';
+import AlertContext from '../../context/alert/alertContext';
 
-export class Search extends Component {
-	state = {
-		text: ''
+// Function components receive propgs as param
+//	But we can also destruct, as done here (to avoid needing props.xxx)
+const Search = () => {
+	const githubContext = useContext(GithubContext);
+	const alertContext = useContext(AlertContext);
+
+	const [text, setText] = useState('');
+
+	const handleChange = e => {
+		setText(e.target.value);
 	};
 
-	handleChange = e => {
-		this.setState({ [e.target.name]: e.target.value });
-	};
-
-	handleSubmit = e => {
+	const handleSubmit = e => {
 		e.preventDefault();
-		if (this.state.text === '') {
-			this.props.setAlert('Please enter a search value', 'light');
+		if (text === '') {
+			alertContext.setAlert('Please enter a search value', 'light');
 		} else {
-			this.props.searchUsers(this.state.text);
-			this.setState({ text: '' });
+			githubContext.searchUsers(text);
+			setText('');
 		}
 	};
 
-	static propTypes = {
-		searchUsers: PropTypes.func.isRequired,
-		clearUsers: PropTypes.func.isRequired,
-		showClear: PropTypes.bool.isRequired,
-		setAlert: PropTypes.func.isRequired
+	const handleFocus = e => {
+		alertContext.RemoveAlert();
 	};
 
-	handleFocus = e => {
-		this.props.setAlert('', '');
-	};
+	return (
+		<div>
+			<form action='' className='form' onSubmit={handleSubmit}>
+				<input
+					type='text'
+					name='text'
+					id=''
+					placeholder='Search Users...'
+					value={text}
+					onChange={handleChange}
+					onFocus={handleFocus}
+				/>
+				<input
+					type='submit'
+					value='Search'
+					className='btn btn-dark btn-block'
+				/>
+			</form>
 
-	render() {
-		const { clearUsers, showClear } = this.props;
-		return (
-			<div>
-				<form action='' className='form' onSubmit={this.handleSubmit}>
-					<input
-						type='text'
-						name='text'
-						id=''
-						placeholder='Search Users...'
-						value={this.state.text}
-						onChange={this.handleChange}
-						onFocus={this.handleFocus}
-					/>
-					<input
-						type='submit'
-						value='Search'
-						className='btn btn-dark btn-block'
-					/>
-				</form>
-
-				{showClear && (
-					<button className='btn btn-light btn-block' onClick={clearUsers}>
-						Clear Results
-					</button>
-				)}
-			</div>
-		);
-	}
-}
+			{githubContext.users.length > 0 && (
+				<button
+					className='btn btn-light btn-block'
+					onClick={githubContext.clearUsers}
+				>
+					Clear Results
+				</button>
+			)}
+		</div>
+	);
+};
 
 export default Search;

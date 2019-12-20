@@ -1,12 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext } from 'react';
+import GithubContext from '../../context/github/githubContext';
 
 // Components
 import UserItem from './Useritem';
 import Spinner from '../layout/Spinner';
 
 // loading and users is passed as props from app. We're destructuring here.
-const Users = ({ loading, users }) => {
+const Users = () => {
+	const githubContext = useContext(GithubContext);
+	const { users, loading } = githubContext;
+
 	if (loading) {
 		return <Spinner />;
 	} else {
@@ -18,11 +21,6 @@ const Users = ({ loading, users }) => {
 			</div>
 		);
 	}
-};
-
-Users.propTypes = {
-	users: PropTypes.array.isRequired,
-	loading: PropTypes.bool.isRequired
 };
 
 // CSS Grid
